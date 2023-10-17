@@ -19,10 +19,10 @@ return new class extends Migration {
             $table->string('position', 255);
             $table->string('role', 255);
             $table->boolean('is_verified');
-            $table->timestamps();
             $table
                 ->foreignIdFor(College::class, 'college_id')
                 ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
