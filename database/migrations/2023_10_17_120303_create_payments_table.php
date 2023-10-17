@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 use App\Models\Student;
 use App\Models\Admin;
+use App\Models\Semester;
 
 return new class extends Migration {
     /**
@@ -16,10 +17,20 @@ return new class extends Migration {
         //refer on the UI
         Schema::create('payments', function (Blueprint $table) {
             $table->string('ar_no')->unique();
+            $table->string('desc')->nullable();
             $table->integer('amount');
+            $table->date('date');
             $table
                 ->foreignIdFor(Student::class, 'student_id')
                 ->onDelete('cascade');
+            $table->foreignIdFor(Admin::class, 'admin_id')->onDelete('cascade');
+            $table
+                ->foreignIdFor(Semester::class, 'semester_id')
+                ->onDelete('cascade');
+            $table
+                ->foreignIdFor(Semester::class, 'acad_year')
+                ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

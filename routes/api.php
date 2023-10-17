@@ -2,8 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Models\Student;
+
+//controllers
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +22,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/all-student', function () {
-    return Student::all();
-});
+//get all the list of admin
+Route::get('/get-admin', [
+    AdminController::class,
+    'getAllAdminSpecificCollege',
+]);
+
+//add payment
+Route::post('/add-payment', [PaymentController::class, 'addPayment']);

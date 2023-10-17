@@ -26,6 +26,10 @@ return new class extends Migration {
     {
         Schema::table('colleges', function (Blueprint $table) {
             //
+            $table
+                ->integer('fee_amount')
+                ->default(0)
+                ->change();
         });
     }
 };

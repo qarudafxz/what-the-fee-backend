@@ -10,11 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('semesters', function (Blueprint $table) {
-            $table->id('semester_id');
-            $table->string('acad_year')->unique();
-            $table->string('semester_name');
-            $table->timestamps();
+        Schema::table('payments', function (Blueprint $table) {
+            //
+            $table
+                ->string('ar_no')
+                ->primary()
+                ->change();
         });
     }
 
@@ -23,6 +24,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('semesters');
+        Schema::table('payments', function (Blueprint $table) {
+            //
+            $table->dropPrimary('ar_no');
+        });
     }
 };
