@@ -13,11 +13,14 @@ class AdminController extends Controller
     {
         $admins = Admin::where('college_id', $request->college_id)
             ->where('role', $request->role)
+            ->select('admin_id', 'email', 'first_name', 'last_name', 'role')
             ->get();
 
         return response()->json([
-            'message' => 'Admin retrieve',
-            'data' => $admins,
+            'statusCode' => 200,
+            'status' => 'success',
+            'message' => 'Admin found',
+            'admins' => $admins,
         ]);
     }
 }

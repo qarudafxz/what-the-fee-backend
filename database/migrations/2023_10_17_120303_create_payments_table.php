@@ -18,18 +18,30 @@ return new class extends Migration {
         Schema::create('payments', function (Blueprint $table) {
             $table->string('ar_no')->unique();
             $table->string('desc')->nullable();
-            $table->integer('amount');
+            $table->decimal('amount', 10, 2);
             $table->date('date');
+
             $table
-                ->foreignIdFor(Student::class, 'student_id')
-                ->onDelete('cascade');
-            $table->foreignIdFor(Admin::class, 'admin_id')->onDelete('cascade');
-            $table
-                ->foreignIdFor(Semester::class, 'semester_id')
+                ->string('student_id')
+                ->references('student_id')
+                ->on('students')
                 ->onDelete('cascade');
             $table
-                ->foreignIdFor(Semester::class, 'acad_year')
+                ->string('admin_id')
+                ->references('admin_id')
+                ->on('admins')
                 ->onDelete('cascade');
+            $table
+                ->string('semester_id')
+                ->references('semester_id')
+                ->on('semesters')
+                ->onDelete('cascade');
+            $table
+                ->string('acad_year')
+                ->references('acad_year')
+                ->on('semesters')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

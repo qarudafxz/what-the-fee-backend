@@ -15,6 +15,18 @@ class IsAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
+        //if request token is empty, return unauthorized
+        //headers token is the token that is passed in the header
+
+        if (empty($request->headers->get('token'))) {
+            return response()->json(
+                [
+                    'message' => 'Unauthorized user. Please login first',
+                ],
+                401
+            );
+        }
+
         return $next($request);
     }
 }

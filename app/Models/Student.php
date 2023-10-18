@@ -10,4 +10,6 @@ class Student extends Model
     use HasFactory;
     protected $primaryKey = 'student_id';
     protected $guarded = [];
+
+    public $timestamps = false;
 }

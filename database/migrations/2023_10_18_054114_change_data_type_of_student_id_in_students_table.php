@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            //
-            $table->integer('id');
+        Schema::table('students', function (Blueprint $table) {
+            $table
+                ->string('student_id')
+                ->unique()
+                ->change();
         });
     }
 
@@ -21,9 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            //
-            $table->dropColumn('id');
-        });
+        Schema::table('students', function (Blueprint $table) {});
     }
 };
