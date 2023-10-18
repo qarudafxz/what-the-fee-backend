@@ -13,15 +13,24 @@ class PaymentController extends Controller
     //
     public function addPayment(Request $request)
     {
-        $student = Student::findOrFail($request->student_id);
-        Payment::create($request->all());
         //call the getStudent function and subtract the amount to the balance
-        $student->balance -= $request->amount;
-        $student->save();
+        $student = Student::findOrFail($request->student_id);
 
-        return response()->json([
-            'message' => 'Payment added',
-            'payment' => $request->all(),
-        ]);
+        if (!$student->balance >= $request->amount) {
+            Payment::create($request->all());
+            $student->balance -= $request->amount;
+            $student->save();
+
+            return response()->json([
+                'message' => 'Payment added',
+                'payment' => $request->all(),
+            ]);
+        } else {
+            return response()->json([
+                'statusCode' => 400,
+                'status' => 'failed',
+                'message' => 'Already paid the remaining balance',
+            ]);
+        }
     }
 }
