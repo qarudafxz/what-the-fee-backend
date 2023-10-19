@@ -33,4 +33,32 @@ class PaymentController extends Controller
             ]);
         }
     }
+
+    public function getTotalPayment(int $college_id)
+    {
+        $all_payment = Payment::join(
+            'students',
+            'students.student_id',
+            '=',
+            'payments.student_id'
+        )
+            ->join(
+                'programs',
+                'programs.program_id',
+                '=',
+                'students.program_id'
+            )
+            ->join(
+                'colleges',
+                'colleges.college_id',
+                '=',
+                'programs.college_id'
+            )
+            ->where('colleges.college_id', $college_id)
+            ->sum('amount');
+
+        return response()->json([
+            'total_payment' => $all_payment,
+        ]);
+    }
 }
