@@ -101,6 +101,8 @@ class PaymentController extends Controller
                 'students.student_id',
                 'students.first_name',
                 'students.last_name',
+                'sem.semester_name',
+                'sem.acad_year',
                 'programs.program_name',
                 'colleges.college_name',
                 'admins.first_name as admin_first_name',
@@ -119,6 +121,12 @@ class PaymentController extends Controller
                 'students.program_id'
             )
             ->join('colleges as c', 'c.college_id', '=', 'pr.college_id')
+            ->join(
+                'semesters as sem',
+                'sem.semester_id',
+                '=',
+                'payments.semester_id'
+            )
             ->where('c.college_id', $college_id)
             ->groupBy(
                 'payments.ar_no',
@@ -127,6 +135,8 @@ class PaymentController extends Controller
                 'payments.created_at',
                 'students.student_id',
                 'students.first_name',
+                'sem.semester_name',
+                'sem.acad_year',
                 'students.last_name',
                 'programs.program_name',
                 'colleges.college_name',
