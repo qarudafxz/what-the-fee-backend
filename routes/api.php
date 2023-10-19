@@ -30,7 +30,19 @@ Route::get('/get-admin', [
 
 //add payment
 Route::post('/add-payment', [PaymentController::class, 'addPayment']);
-Route::get('/get-all-payment/{college_id}', [
+
+//get the sum of total payments in a specific college
+Route::get('/get-total-payment/{college_id}', [
     PaymentController::class,
     'getTotalPayment',
 ]);
+//get all payment
+Route::get('/get-all-payment/{id}', [
+    PaymentController::class,
+    'getAllPayment',
+]);
+
+//get specific student record
+// Route::get(
+//     '/data-student' . [PaymentController::class, 'getPaymentByStudentId']
+// );

@@ -32,10 +32,9 @@ return new class extends Migration {
                 ->on('admins')
                 ->onDelete('cascade');
             $table
-                ->string('semester_id')
-                ->references('semester_id')
-                ->on('semesters')
+                ->foreignIdFor(Semester::class, 'semester_id')
                 ->onDelete('cascade');
+
             $table
                 ->string('acad_year')
                 ->references('acad_year')
