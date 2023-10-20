@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 //controllers
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProgramController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //get all the list of admin
-Route::get('/get-admin', [
+Route::get('/get-admin/{college_id}', [
     AdminController::class,
     'getAllAdminSpecificCollege',
 ]);
@@ -40,6 +41,12 @@ Route::get('/get-total-payment/{college_id}', [
 Route::get('/get-all-payment/{id}', [
     PaymentController::class,
     'getAllPayment',
+]);
+
+//get number of BSIT students
+Route::get('/get-count-programs', [
+    ProgramController::class,
+    'getCountOfPrograms',
 ]);
 
 //get specific student record

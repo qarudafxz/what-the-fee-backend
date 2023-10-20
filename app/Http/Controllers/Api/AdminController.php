@@ -9,10 +9,9 @@ use App\Models\Admin;
 class AdminController extends Controller
 {
     //
-    public function getAllAdminSpecificCollege(Request $request)
+    public function getAllAdminSpecificCollege(int $college_id)
     {
-        $admins = Admin::where('college_id', $request->college_id)
-            ->where('role', $request->role)
+        $admins = Admin::where('college_id', $college_id)
             ->select('admin_id', 'email', 'first_name', 'last_name', 'role')
             ->get();
 
