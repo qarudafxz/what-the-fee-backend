@@ -151,4 +151,17 @@ class PaymentController extends Controller
             'payments' => $payment,
         ]);
     }
+
+    public function filterStudent(Request $request)
+    {
+        $student = Student::where(
+            $request->parameters,
+            $request->input_value
+        )->first();
+
+        return response()->json([
+            'message' => 'Student record retrieved',
+            'student' => $student,
+        ]);
+    }
 }
