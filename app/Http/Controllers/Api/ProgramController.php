@@ -24,8 +24,8 @@ class ProgramController extends Controller
 
         //get the percentage from the total population of BSIT students of
         $percentageOfBsit = ($bsit / $total_number_of_bsit_students) * 100;
-        $percentageOfBsis = ($bscs / $total_number_of_bsis_students) * 100;
-        $percentageOfBscs = ($bsis / $total_number_of_bscs_students) * 100;
+        $percentageOfBsis = ($bsis / $total_number_of_bsis_students) * 100;
+        $percentageOfBscs = ($bscs / $total_number_of_bscs_students) * 100;
 
         return response()->json([
             'message' => 'Students retrieved',
