@@ -10,4 +10,8 @@ class Admin extends Model
     use HasFactory;
     protected $primaryKey = 'admin_id';
     protected $guarded = [];
+
+    public $incrementing = false;
+
+    public $hidden = ['password'];
 }

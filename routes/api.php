@@ -38,10 +38,7 @@ Route::get('/get-total-payment/{college_id}', [
     'getTotalPayment',
 ]);
 //get all payment
-Route::get('/get-all-payment/{id}', [
-    PaymentController::class,
-    'getAllPayment',
-]);
+Route::get('/get-all-payment', [PaymentController::class, 'getAllPayment']);
 
 //get number of BSIT students
 Route::get('/get-count-programs', [
