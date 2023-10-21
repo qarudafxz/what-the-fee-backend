@@ -25,6 +25,16 @@ class PaymentController extends Controller
                 'message' => 'Payment added',
                 'payment' => $request->all(),
             ]);
+        } elseif ($request->amount === $student->balance) {
+            $payment = Payment::create($request->all());
+            $payment->status = 'full';
+            $student->balance -= $request->amount;
+            $student->save();
+
+            return response()->json([
+                'message' => 'Payment added',
+                'payment' => $request->all(),
+            ]);
         } else {
             return response()->json([
                 'statusCode' => 400,
@@ -95,6 +105,18 @@ class PaymentController extends Controller
         return response()->json([
             'message' => 'Student record retrieved',
             'student' => $student,
+        ]);
+    }
+
+    public function getLastPaymentAr()
+    {
+        $last_payment = Payment::select('ar_no')
+            ->orderBy('ar_no', 'desc')
+            ->first();
+
+        return response()->json([
+            'message' => 'Last payment retrieved',
+            'last_payment' => $last_payment,
         ]);
     }
 }
