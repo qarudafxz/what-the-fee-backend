@@ -52,7 +52,7 @@ Route::get('/get-latest-payment', [
     'getLastPaymentAr',
 ]);
 
-//get number of BSIT students
+//get data of all progrma
 Route::get('/get-count-programs', [
     ProgramController::class,
     'getCountOfPrograms',

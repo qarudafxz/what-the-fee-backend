@@ -27,6 +27,18 @@ class ProgramController extends Controller
         $percentageOfBsis = ($bsis / $total_number_of_bsis_students) * 100;
         $percentageOfBscs = ($bscs / $total_number_of_bscs_students) * 100;
 
+        //calculate the percentage of the population for each program added for the past 7 days
+        $sevenDaysAgo = now()->subDays(7);
+        $bsit_last_seven_days = Student::where('program_id', $this->BSIT)
+            ->where('created_at', '>=', $sevenDaysAgo)
+            ->count();
+        $bsis_last_seven_days = Student::where('program_id', $this->BSIS)
+            ->where('created_at', '>=', $sevenDaysAgo)
+            ->count();
+        $bscs_last_seven_days = Student::where('program_id', $this->BSCS)
+            ->where('created_at', '>=', $sevenDaysAgo)
+            ->count();
+
         return response()->json([
             'message' => 'Students retrieved',
             'students' => [
@@ -35,18 +47,21 @@ class ProgramController extends Controller
                     'currentPopulation' => $bsit,
                     'totalPopulation' => $total_number_of_bsit_students,
                     'percentage' => $percentageOfBsit,
+                    'lastSevenDays' => $bsit_last_seven_days,
                 ],
                 [
                     'name' => 'Information System',
                     'currentPopulation' => $bsis,
                     'totalPopulation' => $total_number_of_bsis_students,
                     'percentage' => $percentageOfBsis,
+                    'lastSevenDays' => $bsis_last_seven_days,
                 ],
                 [
                     'name' => 'Computer Science',
                     'currentPopulation' => $bscs,
                     'totalPopulation' => $total_number_of_bscs_students,
                     'percentage' => $percentageOfBscs,
+                    'lastSevenDays' => $bscs_last_seven_days,
                 ],
             ],
         ]);
