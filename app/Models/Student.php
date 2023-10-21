@@ -19,4 +19,9 @@ class Student extends Model
     protected $casts = [
         'student_id' => 'string',
     ];
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class, 'program_id', 'program_id');
+    }
 }

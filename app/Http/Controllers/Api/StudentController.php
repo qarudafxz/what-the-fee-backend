@@ -14,13 +14,4 @@ class StudentController extends Controller
         $students = Student::select('id', 'name', 'program')->get();
         return response()->json($students);
     }
-
-    public function searchStudent(string $student_id)
-    {
-        $student = Student::find($student_id);
-        return response()->json([
-            'message' => 'Student found',
-            'student' => $student,
-        ]);
-    }
 }

@@ -119,4 +119,16 @@ class PaymentController extends Controller
             'last_payment' => $last_payment,
         ]);
     }
+
+    public function searchStudent(string $student_id)
+    {
+        $student = Student::with(['program'])
+            ->where('student_id', $student_id)
+            ->firstOrFail();
+
+        return response()->json([
+            'message' => 'Student found',
+            'student' => $student,
+        ]);
+    }
 }
