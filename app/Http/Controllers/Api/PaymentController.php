@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PaymentRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Payment;
@@ -13,6 +14,12 @@ class PaymentController extends Controller
     //
     public function addPayment(Request $request)
     {
+        $request->validate([
+            'student_id' => 'required',
+            'amount' => 'required|numeric',
+            'semester_id' => 'required',
+            'acad_year' => 'required',
+        ]);
         //call the getStudent function and subtract the amount to the balance
         $student = Student::findOrFail($request->student_id);
 
