@@ -148,12 +148,9 @@ class PaymentController extends Controller
 
     public function getStudentBalance(string $student_id)
     {
-        $student = Student::where('student_id', $student_id)->select(
-            'student_id',
-            'first_name',
-            'last_name',
-            'balance'
-        );
+        $student = Student::where('student_id', $student_id)
+            ->select('student_id', 'first_name', 'last_name', 'balance')
+            ->get();
 
         if (!$student) {
             return response()->json([
