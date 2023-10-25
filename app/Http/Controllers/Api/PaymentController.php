@@ -145,4 +145,27 @@ class PaymentController extends Controller
             'student' => $student,
         ]);
     }
+
+    public function getStudentBalance(string $student_id)
+    {
+        $student = Student::where('student_id', $student_id)->select(
+            'student_id',
+            'first_name',
+            'last_name',
+            'balance'
+        );
+
+        if (!$student) {
+            return response()->json([
+                'message' => 'Student not found',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Successfully retrieved student ',
+            $student,
+            ' remaining balance',
+            'student' => $student,
+        ]);
+    }
 }

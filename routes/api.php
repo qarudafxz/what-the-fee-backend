@@ -39,7 +39,7 @@ Route::get('/get-total-payment/{college_id}', [
 ]);
 Route::get('/get-all-payment', [PaymentController::class, 'getAllPayment']);
 Route::get('/get-student-payment/{id}', [
-    StudentController::class,
+    PaymentController::class,
     'getStudentBalance',
 ]);
 Route::get('/get-latest-payment', [
