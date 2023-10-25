@@ -40,7 +40,8 @@ class Payment extends Model
 
     public function collector()
     {
-        return $this->hasOne(Admin::class, 'admin_id', 'admin_id');
+        //change student_id to admin_id later
+        return $this->hasOne(Admin::class, 'student_id', 'student_id');
     }
 
     public function program()

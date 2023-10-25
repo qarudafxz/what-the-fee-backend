@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Admin extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'admin_id';
+    //change primaryKey to admin_id if env setup for db is local
+    protected $primaryKey = 'student_id';
     protected $guarded = [];
 
     public $incrementing = false;
