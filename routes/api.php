@@ -46,6 +46,14 @@ Route::get('/get-latest-payment', [
     PaymentController::class,
     'getLastPaymentAr',
 ]);
+Route::get('/last-7-days/{id}', [
+    PaymentController::class,
+    'getPercentageOfLast7daysCollection',
+]);
+Route::get('/last-30-days/{id}', [
+    PaymentController::class,
+    'getPercentageOfLast30daysCollection',
+]);
 Route::get('/get-count-programs', [
     ProgramController::class,
     'getCountOfPrograms',

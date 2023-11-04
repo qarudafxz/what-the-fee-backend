@@ -12,8 +12,7 @@ class AdminController extends Controller
     public function getAllAdminSpecificCollege(int $college_id)
     {
         $admins = Admin::where('college_id', $college_id)
-        //admin_id if local
-            ->select('student_id', 'email', 'first_name', 'last_name', 'role')
+            ->select('admin_id', 'email', 'first_name', 'last_name', 'role')
             ->get();
 
         return response()->json([

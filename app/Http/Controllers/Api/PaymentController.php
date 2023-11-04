@@ -165,4 +165,77 @@ class PaymentController extends Controller
             'student' => $student,
         ]);
     }
+
+    public function getPercentageOfLast7daysCollection(int $college_id)
+    {
+        $last_7_days = Payment::whereBetween('payments.created_at', [
+            now()->subDays(7),
+            now(),
+        ])
+            ->join(
+                'students',
+                'students.student_id',
+                '=',
+                'payments.student_id'
+            )
+            ->join(
+                'programs',
+                'programs.program_id',
+                '=',
+                'students.program_id'
+            )
+            ->join(
+                'colleges',
+                'colleges.college_id',
+                '=',
+                'programs.college_id'
+            )
+            ->where('colleges.college_id', $college_id)
+            ->sum('amount');
+        $total_payment = Payment::sum('amount');
+        $percentage = ($last_7_days / $total_payment) * 100;
+
+        return response()->json([
+            'message' => 'Percentage of last 7 days collection',
+            'percentage' => $percentage,
+            'payment' => $last_7_days,
+        ]);
+    }
+
+    public function getPercentageOfLast30daysCollection(int $college_id)
+    {
+        $last_30_days = Payment::whereBetween('payments.created_at', [
+            now()->subDays(30),
+            now(),
+        ])
+            ->join(
+                'students',
+                'students.student_id',
+                '=',
+                'payments.student_id'
+            )
+            ->join(
+                'programs',
+                'programs.program_id',
+                '=',
+                'students.program_id'
+            )
+            ->join(
+                'colleges',
+                'colleges.college_id',
+                '=',
+                'programs.college_id'
+            )
+            ->where('colleges.college_id', $college_id)
+            ->sum('amount');
+
+        $total_payment = Payment::sum('amount');
+        $percentage = ($last_30_days / $total_payment) * 100;
+
+        return response()->json([
+            'message' => 'Percentage of last 30 days collection',
+            'percentage' => $percentage,
+            'payment' => $last_30_days,
+        ]);
+    }
 }
