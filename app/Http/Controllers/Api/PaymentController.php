@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PaymentRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Payment;
@@ -11,7 +10,6 @@ use App\Models\Student;
 
 class PaymentController extends Controller
 {
-    //
     public function addPayment(Request $request)
     {
         $request->validate([
@@ -20,44 +18,38 @@ class PaymentController extends Controller
             'semester_id' => 'required',
             'acad_year' => 'required',
         ]);
-        //call the getStudent function and subtract the amount to the balance
+
         $student = Student::findOrFail($request->student_id);
 
-        //if the remaining balance of the student is greater than the payable amount
-        if ($request->amount < $student->balance && $request->amount != 0) {
-            $payment = new Payment();
-            $payment->fill($request->except('desc'));
-            $payment->desc = 'partial';
-            $payment->save();
-
-            $student->balance -= $request->amount;
-            $student->save();
-
-            return response()->json([
-                'message' => 'Payment added',
-                'payment' => $payment,
-            ]);
-        } elseif ($request->amount >= $student->balance) {
-            $payment = new Payment();
-            $payment->fill($request->except('desc'));
-            $payment->desc = 'full';
-            $payment->save();
-            $student->balance -= $request->amount;
-            $student->save();
-
-            return response()->json([
-                'message' => 'Payment added',
-                'payment' => $payment,
-            ]);
-        } else {
+        if ($student->balance === 0.0) {
             return response()->json([
                 'statusCode' => 400,
                 'status' => 'failed',
                 'message' => 'Already paid the remaining balance',
             ]);
         }
-    }
 
+        $deductibleAmount = min($request->amount, $student->balance);
+
+        $payment = new Payment();
+        $payment->fill($request->except('desc'));
+
+        if ($deductibleAmount < $student->balance) {
+            $payment->desc = 'partial';
+        } else {
+            $payment->desc = 'full';
+        }
+
+        $payment->save();
+
+        $student->balance -= $deductibleAmount;
+        $student->save();
+
+        return response()->json([
+            'message' => 'Payment added',
+            'payment' => $payment,
+        ]);
+    }
     public function getTotalPayment(int $college_id)
     {
         $all_payment = Payment::join(
@@ -236,6 +228,47 @@ class PaymentController extends Controller
             'message' => 'Percentage of last 30 days collection',
             'percentage' => $percentage,
             'payment' => $last_30_days,
+        ]);
+    }
+
+    public function getLatestPayee(int $college_id)
+    {
+        $latest_payee = Payment::join(
+            'students',
+            'students.student_id',
+            '=',
+            'payments.student_id'
+        )
+            ->join(
+                'programs',
+                'programs.program_id',
+                '=',
+                'students.program_id'
+            )
+            ->join(
+                'colleges',
+                'colleges.college_id',
+                '=',
+                'programs.college_id'
+            )
+            ->where('colleges.college_id', $college_id)
+            ->orderBy('payments.created_at', 'desc')
+            ->first();
+
+        return response()->json([
+            'message' => 'Latest payee',
+            'latest_payee' => $latest_payee,
+        ]);
+    }
+
+    public function getStudentLogs(string $student_id)
+    {
+        $studentPayment = Payment::where('student_id', $student_id)
+            ->with(['collector'])
+            ->get();
+        return response()->json([
+            'message' => 'Payment retrieved',
+            'payments' => $studentPayment,
         ]);
     }
 }

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProgramController;
-use App\Http\Controllers\Api\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +22,13 @@ use App\Http\Controllers\Api\StudentController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/student-logs/{student_id}', [
+    PaymentController::class,
+    'getStudentLogs',
+]);
+
+//====================================================
 
 Route::get('/search-student/{student_id}', [
     PaymentController::class,
