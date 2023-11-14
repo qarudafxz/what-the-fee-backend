@@ -52,6 +52,7 @@ class PaymentController extends Controller
             'payment' => $payment,
         ]);
     }
+
     public function getTotalPayment(int $college_id)
     {
         $all_payment = Payment::join(
@@ -345,5 +346,9 @@ class PaymentController extends Controller
             'message' => 'Receipt saved',
             'receipt' => $receipt,
         ]);
+    }
+
+    public function updatePaymentRecord(Request $request, string $ar_no)
+    {
     }
 }

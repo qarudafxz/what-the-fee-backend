@@ -31,6 +31,12 @@ class ExpensesController extends Controller
     public function getAllExpensesInSpecificCollege(int $college_id)
     {
         $expenses = Expense::where('college_id', $college_id)->get();
-        return response()->json($expenses);
+
+        $total = Expense::where('college_id', $college_id)->sum('amount');
+
+        return response()->json([
+            'expenses' => $expenses,
+            'total' => $total,
+        ]);
     }
 }
