@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class College extends Model
+class Permission extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'college_id';
+    protected $primaryKey = 'admin_id';
 }

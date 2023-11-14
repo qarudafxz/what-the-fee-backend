@@ -14,4 +14,14 @@ class Admin extends Model
     public $incrementing = false;
 
     public $hidden = ['password', 'email', 'created_at', 'updated_at'];
+
+    public function permissions()
+    {
+        return $this->hasOne(Permission::class, 'admin_id', 'admin_id');
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(Request::class, 'admin_id', 'admin_id');
+    }
 }

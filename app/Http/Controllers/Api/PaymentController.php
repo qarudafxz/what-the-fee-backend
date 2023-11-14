@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\Receipt;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -21,7 +23,7 @@ class PaymentController extends Controller
 
         $student = Student::findOrFail($request->student_id);
 
-        if ($student->balance === 0.0) {
+        if ($student->balance == 0.0) {
             return response()->json([
                 'statusCode' => 400,
                 'status' => 'failed',
@@ -266,9 +268,82 @@ class PaymentController extends Controller
         $studentPayment = Payment::where('student_id', $student_id)
             ->with(['collector'])
             ->get();
+
         return response()->json([
             'message' => 'Payment retrieved',
             'payments' => $studentPayment,
+        ]);
+    }
+
+    public function getTotalPaymentOfStudent(string $student_id)
+    {
+        $total_payment = Payment::where('student_id', $student_id)->sum(
+            'amount'
+        );
+
+        return response()->json([
+            'message' => 'Total payment retrieve of student',
+            'total_payment' => $total_payment,
+        ]);
+    }
+
+    public function getTotalPaymentPerMonthInCurrentYear(int $college_id)
+    {
+        $total_payment = Payment::whereYear('payments.date', now()->year)
+            ->join(
+                'students',
+                'students.student_id',
+                '=',
+                'payments.student_id'
+            )
+            ->join(
+                'programs',
+                'programs.program_id',
+                '=',
+                'students.program_id'
+            )
+            ->join(
+                'colleges',
+                'colleges.college_id',
+                '=',
+                'programs.college_id'
+            )
+            ->where('colleges.college_id', $college_id)
+            ->selectRaw(
+                'sum(amount) as total_payment, EXTRACT(MONTH FROM payments.date) as payment_month'
+            )
+            ->groupByRaw('EXTRACT(MONTH FROM payments.date)')
+            ->get();
+
+        $monthly_data = [];
+        foreach ($total_payment as $payment) {
+            $monthName = Carbon::createFromFormat(
+                '!m',
+                $payment->payment_month
+            )->format('F');
+            $monthly_data[] = [
+                'month' => $monthName,
+                'total_payment' => $payment->total_payment,
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Total payment per month in current year',
+            'monthly_data' => $monthly_data,
+        ]);
+    }
+
+    public function savePayment(string $ar_no)
+    {
+        $payment = Payment::where('ar_no', $ar_no)->firstOrFail();
+
+        $receipt = new Receipt();
+        $receipt->ar_no = $payment->ar_no;
+        $receipt->save();
+
+        return response()->json([
+            'message' => 'Receipt saved',
+            'receipt' => $receipt,
         ]);
     }
 }

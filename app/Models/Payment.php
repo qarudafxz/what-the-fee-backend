@@ -54,4 +54,9 @@ class Payment extends Model
             'program_id'
         );
     }
+
+    public function requests()
+    {
+        return $this->hasMany(Request::class, 'admin_id', 'admin_id');
+    }
 }
