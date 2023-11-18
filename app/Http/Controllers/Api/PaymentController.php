@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Receipt;
+use App\Models\Permission;
+use App\Models\Log;
 use Carbon\Carbon;
 
 class PaymentController extends Controller
@@ -20,6 +22,21 @@ class PaymentController extends Controller
             'semester_id' => 'required',
             'acad_year' => 'required',
         ]);
+
+        $admin_permission = Permission::findOrFail(
+            $request->header('admin_id')
+        );
+
+        if (
+            !$admin_permission->can_add ||
+            $admin_permission->can_add !== true
+        ) {
+            return response()->json([
+                'statusCode' => 400,
+                'status' => 'failed',
+                'message' => 'Admin not permitted to do such action',
+            ]);
+        }
 
         $student = Student::findOrFail($request->student_id);
 
@@ -46,6 +63,15 @@ class PaymentController extends Controller
 
         $student->balance -= $deductibleAmount;
         $student->save();
+
+        $log = new Log();
+        $log->label =
+            'added a new payment record with the amount of ' . $payment->amount;
+        $log->method = 'POST';
+        $log->admin_id = $payment->admin_id;
+        $log->ar_no = $payment->ar_no;
+
+        $log->save();
 
         return response()->json([
             'message' => 'Payment added',
@@ -119,7 +145,13 @@ class PaymentController extends Controller
 
     public function getLastPaymentAr()
     {
-        $last_payment = Payment::select('ar_no')
+        $last_payment = Payment::join(
+            'students',
+            'students.student_id',
+            '=',
+            'payments.student_id'
+        )
+            ->select('payments.*', 'students.first_name', 'students.last_name')
             ->orderBy('ar_no', 'desc')
             ->first();
 
@@ -346,9 +378,5 @@ class PaymentController extends Controller
             'message' => 'Receipt saved',
             'receipt' => $receipt,
         ]);
-    }
-
-    public function updatePaymentRecord(Request $request, string $ar_no)
-    {
     }
 }

@@ -17,7 +17,8 @@ return new class extends Migration {
             $table->string('student_id')->unique();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('email');
+            $table->string('email')->max(50);
+            $table->string('password')->max(255);
             $table->decimal('balance', 8, 2)->default(1300.0);
             $table
                 ->foreignIdFor(Program::class, 'program_id')

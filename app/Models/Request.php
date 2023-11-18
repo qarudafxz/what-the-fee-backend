@@ -15,7 +15,7 @@ class Request extends Model
 
     public function admin()
     {
-        return $this->hasOne(Admin::class, 'admin_id');
+        return $this->belongsTo(Admin::class, 'admin_id');
     }
 
     public function payment()
