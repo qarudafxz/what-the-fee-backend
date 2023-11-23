@@ -20,6 +20,7 @@ return new class extends Migration {
                 ->references('admin_id')
                 ->on('admins')
                 ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

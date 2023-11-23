@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 //controllers
@@ -10,7 +9,9 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProgramController;
 use App\Http\Controllers\Api\ReceiptController;
-
+use App\Http\Controllers\Api\LogsController;
+use App\Http\Controllers\Api\RequestController;
+use App\Http\Controllers\Api\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,11 +23,15 @@ use App\Http\Controllers\Api\ReceiptController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
 
-//payment apis ===================================================================
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        Route::get('logout', [AuthController::class, 'logout']);
+        Route::get('user', [AuthController::class, 'user']);
+    });
+});
 
 Route::controller(PaymentController::class)
     ->middleware('admin')
@@ -46,7 +51,7 @@ Route::controller(PaymentController::class)
         //this is for scanning the qr code of the student, to get the student id
         Route::get('/get-student-payment/{id}', 'getStudentBalance');
         //get the latest payment
-        Route::get('/get-latest-payment', 'getLastPaymentAr');
+        Route::get('/latest-payment', 'getLastPaymentAr');
         //get the last 7 days of collection of a specific college with percentange
         Route::get('/last-7-days/{id}', 'getPercentageOfLast7daysCollection');
         //get the last 30 days of collection of a specific college with percentange
@@ -107,10 +112,33 @@ Route::controller(ReceiptController::class)
 //permission apis ===================================================================
 
 Route::controller(PermissionController::class)
-    ->middleware('admin')
+    // ->middleware('admin')
     ->group(function () {
         //get all permissions
         Route::get('/permissions', 'getAllPermissionsOfAllAdmins');
         //update permission of an admin
-        Route::put('/update-permission/{admin_id}', 'updatePermission');
+        Route::put('/can-update-permission/{admin_id}', 'canUpdatePermission');
+        Route::put('/can-delete-permission/{admin_id}', 'canDeletePermission');
+    });
+
+//Logs apis ===================================================================
+Route::controller(LogsController::class)
+    ->middleware('admin')
+    ->group(function () {
+        //get all the logs
+        Route::get('/logs', 'getLogs');
+    });
+
+Route::controller(RequestController::class)
+    // ->middleware('admin')
+    ->group(function () {
+        //get all requests
+        Route::get('/requests', 'getAllRequests');
+        //creating a new request
+        Route::post('/create-request', 'createRequest');
+        Route::get('/request/{id}', 'getSelectedRequest');
+        //grant request
+        Route::post('/grant-request/{id}', 'grantRequest');
+        //decline request
+        Route::post('/decline-request/{id}', 'declineRequest');
     });

@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Student extends Model
+class Student extends Model implements Authenticatable
 {
-    use HasFactory;
+    use AuthenticatableTrait, HasFactory, HasApiTokens, Notifiable;
 
     protected $primaryKey = 'student_id';
     protected $guarded = [];
@@ -20,8 +24,28 @@ class Student extends Model
         'student_id' => 'string',
     ];
 
+    protected $hidden = ['password'];
+
     public function program()
     {
         return $this->belongsTo(Program::class, 'program_id', 'program_id');
     }
+
+    // Additional methods for the Authenticatable interface
+    public function getAuthIdentifierName()
+    {
+        return 'student_id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->getAttribute('student_id');
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->getAttribute('password');
+    }
+
+    // need to implement other methods as well, depending on your requirements.
 }
