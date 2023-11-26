@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\LogsController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,6 +32,24 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('user', [AuthController::class, 'user']);
     });
+});
+
+//Student platform APIs
+Route::middleware('auth:sanctum')->group(function () {
+    //getting the remaining balance of the student
+    Route::get('/balance/{id}', [
+        PaymentController::class,
+        'getStudentBalance',
+    ]);
+    //getting the payment logs of the student
+    Route::get('/logs/{id}', [PaymentController::class, 'getStudentLogs']);
+    //getting the total amount being paid by the student
+    Route::get('/student-payment/{id}', [
+        PaymentController::class,
+        'getTotalPaymentOfStudent',
+    ]);
+    //getting the total amount being collected by the college
+    Route::get('/college/{id}', [PaymentController::class, 'getTotalPayment']);
 });
 
 Route::controller(PaymentController::class)
@@ -107,6 +126,10 @@ Route::controller(ReceiptController::class)
         Route::get('/receipts', 'getReceipts');
         //get all information of receipt
         Route::get('/receipt/{ar_no}', 'getFullDetailsOfReceipt');
+        //archive receipt
+        Route::post('/archive-receipt/{ar_no}', 'archiveReceipt');
+        Route::get('/archives', 'getArchivedReceipts');
+        Route::post('/restore-receipt/{ar_no}', 'restoreReceiptFromArchives');
     });
 
 //permission apis ===================================================================
