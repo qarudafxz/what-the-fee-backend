@@ -11,6 +11,8 @@ use App\Models\Log;
 use App\Models\Student;
 use App\Models\Payment;
 
+use Pusher\Pusher;
+
 class ReceiptController extends Controller
 {
     public function getReceipts()
@@ -174,5 +176,51 @@ class ReceiptController extends Controller
         */
 
         $receipt = Receipt::where('ar_no', $ar_no)->first();
+
+        if (!$receipt) {
+            return response()->json(
+                [
+                    'message' => 'Receipt not found',
+                ],
+                404
+            );
+        }
+
+        $student = Student::where('student_id', $request->student_id)->first();
+
+        if (!$student) {
+            return response()->json(
+                [
+                    'message' => 'Student not found',
+                ],
+                404
+            );
+        }
+
+        $pusher = new Pusher(
+            config('broadcasting.connections.pusher.key'),
+            config('broadcasting.connections.pusher.secret'),
+            config('broadcasting.connections.pusher.app_id'),
+            [
+                'cluster' => config(
+                    'broadcasting.connections.pusher.options.cluster'
+                ),
+                'useTLS' => true,
+            ]
+        );
+
+        $channel = 'private-student-' . $student->student_id;
+        $event = 'receipt-received';
+
+        $data = [
+            'receipt' => $receipt,
+            'message' => 'You have a new receipt!',
+        ];
+
+        $pusher->trigger($channel, $event, $data);
+
+        return response()->json([
+            'message' => 'Receipt sent via Pusher',
+        ]);
     }
 }
