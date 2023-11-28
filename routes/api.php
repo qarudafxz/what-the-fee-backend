@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\LogsController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\GCashController;
 
 /*
 |--------------------------------------------------------------------------
@@ -152,6 +153,7 @@ Route::controller(LogsController::class)
         Route::get('/logs', 'getLogs');
     });
 
+//Requests apis =======================================================================
 Route::controller(RequestController::class)
     // ->middleware('admin')
     ->group(function () {
@@ -165,3 +167,8 @@ Route::controller(RequestController::class)
         //decline request
         Route::post('/decline-request/{id}', 'declineRequest');
     });
+
+//Gcash payment controller
+Route::controller(GCashController::class)->group(function () {
+    Route::get('/pay/{student_id}/{amount}', 'pay');
+});
