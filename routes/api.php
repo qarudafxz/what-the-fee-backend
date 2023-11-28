@@ -171,4 +171,5 @@ Route::controller(RequestController::class)
 //Gcash payment controller
 Route::controller(GCashController::class)->group(function () {
     Route::get('/pay/{student_id}/{amount}', 'pay');
+    Route::post('/webhook', 'webhook');
 });
