@@ -9,7 +9,6 @@ use App\Models\Receipt;
 use App\Models\Admin;
 use App\Models\Log;
 use App\Models\Student;
-use App\Models\Payment;
 
 use Pusher\Pusher;
 
@@ -163,6 +162,8 @@ class ReceiptController extends Controller
         ]);
     }
 
+    //This is the last function that is needed to fix
+    //Will work on this tomorrow
     public function sendReceiptViaPusher(string $ar_no, Request $request)
     {
         /* 
@@ -174,6 +175,11 @@ class ReceiptController extends Controller
 
             # the pusher's database must have a student_id column to match with the student's id    
         */
+
+        $request->validate([
+            'student_id' => 'required|string|max:9',
+            'note' => 'required|string',
+        ]);
 
         $receipt = Receipt::where('ar_no', $ar_no)->first();
 
@@ -197,30 +203,38 @@ class ReceiptController extends Controller
             );
         }
 
-        $pusher = new Pusher(
-            config('broadcasting.connections.pusher.key'),
-            config('broadcasting.connections.pusher.secret'),
-            config('broadcasting.connections.pusher.app_id'),
-            [
-                'cluster' => config(
-                    'broadcasting.connections.pusher.options.cluster'
-                ),
-                'useTLS' => true,
-            ]
-        );
+        try {
+            $pusher = new Pusher(
+                config('broadcasting.connections.pusher.key'),
+                config('broadcasting.connections.pusher.secret'),
+                config('broadcasting.connections.pusher.app_id'),
+                [
+                    'cluster' => config(
+                        'broadcasting.connections.pusher.options.cluster'
+                    ),
+                    'useTLS' => true,
+                ]
+            );
 
-        $channel = 'private-student-' . $student->student_id;
-        $event = 'receipt-received';
+            $channel = 'private-student-' . $student->student_id;
+            $event = 'receipt-received';
 
-        $data = [
-            'receipt' => $receipt,
-            'message' => 'You have a new receipt!',
-        ];
+            $data = [
+                'receipt' => $receipt,
+                'message' => 'You have a new receipt!',
+                'note' => $request->note,
+            ];
 
-        $pusher->trigger($channel, $event, $data);
+            $pusher->trigger($channel, $event, $data);
 
-        return response()->json([
-            'message' => 'Receipt sent via Pusher',
-        ]);
+            return response()->json([
+                'message' => 'Receipt sent via Pusher',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error sending receipt via Pusher',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

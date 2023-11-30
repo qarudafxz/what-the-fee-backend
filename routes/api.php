@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\LogsController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GCashController;
+use App\Http\Controllers\Api\PusherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,7 +122,7 @@ Route::controller(ExpensesController::class)
 //receipt apis ===================================================================
 
 Route::controller(ReceiptController::class)
-    ->middleware('admin')
+    // ->middleware('admin')
     ->group(function () {
         //get all receipts
         Route::get('/receipts', 'getReceipts');
@@ -131,6 +132,7 @@ Route::controller(ReceiptController::class)
         Route::post('/archive-receipt/{ar_no}', 'archiveReceipt');
         Route::get('/archives', 'getArchivedReceipts');
         Route::post('/restore-receipt/{ar_no}', 'restoreReceiptFromArchives');
+        Route::post('/send-receipt/{ar_no}', 'sendReceiptViaPusher');
     });
 
 //permission apis ===================================================================
@@ -173,3 +175,10 @@ Route::controller(GCashController::class)->group(function () {
     Route::get('/pay/{student_id}/{amount}', 'pay');
     Route::post('/webhook', 'webhook');
 });
+
+//pusher auth, put the cors middleware here
+Route::middleware('cors')
+    ->controller(PusherController::class)
+    ->group(function () {
+        Route::post('/pusher/auth', 'pusherAuth');
+    });
