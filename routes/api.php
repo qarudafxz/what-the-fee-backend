@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GCashController;
 use App\Http\Controllers\Api\PusherController;
+use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -170,15 +171,19 @@ Route::controller(RequestController::class)
         Route::post('/decline-request/{id}', 'declineRequest');
     });
 
+//Pusher authentication
+Route::post('/pusher/auth', [PusherController::class, 'pusherAuth']);
+
+//notification controller
+Route::controller(NotificationController::class)->group(function () {
+    //get all notifications
+    Route::get('/notifications/{student_id}', 'getNotifications');
+    //delete all notifications
+    Route::delete('/notifications/{student_id}', 'deleteAllNotifications');
+});
+
 //Gcash payment controller
 Route::controller(GCashController::class)->group(function () {
     Route::get('/pay/{student_id}/{amount}', 'pay');
     Route::post('/webhook', 'webhook');
 });
-
-//pusher auth, put the cors middleware here
-Route::middleware('cors')
-    ->controller(PusherController::class)
-    ->group(function () {
-        Route::post('/pusher/auth', 'pusherAuth');
-    });

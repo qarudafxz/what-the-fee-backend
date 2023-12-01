@@ -9,6 +9,7 @@ use App\Models\Receipt;
 use App\Models\Admin;
 use App\Models\Log;
 use App\Models\Student;
+use App\Models\Notification;
 
 use Pusher\Pusher;
 
@@ -181,7 +182,38 @@ class ReceiptController extends Controller
             'note' => 'required|string',
         ]);
 
-        $receipt = Receipt::where('ar_no', $ar_no)->first();
+        $receipt = Receipt::join(
+            'payments',
+            'payments.ar_no',
+            '=',
+            'receipts.ar_no'
+        )
+            ->join(
+                'students',
+                'students.student_id',
+                '=',
+                'payments.student_id'
+            )
+            ->join(
+                'semesters',
+                'semesters.semester_id',
+                '=',
+                'payments.semester_id'
+            )
+            ->join('admins', 'admins.admin_id', '=', 'payments.admin_id')
+            ->select(
+                'payments.date',
+                'receipts.ar_no as ar_no',
+                'students.first_name as first_name',
+                'students.last_name as last_name',
+                'students.student_id as student_id',
+                'payments.amount as amount',
+                'semesters.semester_name as semester',
+                'semesters.acad_year as acad_year',
+                'admins.admin_id as admin_id'
+            )
+            ->where('receipts.ar_no', $ar_no)
+            ->get();
 
         if (!$receipt) {
             return response()->json(
@@ -217,13 +249,19 @@ class ReceiptController extends Controller
             );
 
             $channel = 'private-student-' . $student->student_id;
-            $event = 'receipt-received';
+            $event = 'client-receipt-received';
 
             $data = [
                 'receipt' => $receipt,
                 'message' => 'You have a new receipt!',
                 'note' => $request->note,
             ];
+
+            $notification = new Notification();
+            $notification->student_id = $student->student_id;
+            $notification->receipt = $receipt;
+            $notification->note = $request->note;
+            $notification->save();
 
             $pusher->trigger($channel, $event, $data);
 
