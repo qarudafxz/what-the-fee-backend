@@ -167,7 +167,7 @@ Route::controller(RequestController::class)
         Route::get('/request/{id}', 'getSelectedRequest');
         //grant request
         Route::post('/grant-request/{id}', 'grantRequest');
-        //decline request
+        //decline reques
         Route::post('/decline-request/{id}', 'declineRequest');
     });
 

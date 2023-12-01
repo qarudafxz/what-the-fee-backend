@@ -250,8 +250,10 @@ class ReceiptController extends Controller
 
             $channel = 'private-student-' . $student->student_id;
             $event = 'client-receipt-received';
+            $unique_id = uniqid();
 
             $data = [
+                'id' => $unique_id,
                 'receipt' => $receipt,
                 'message' => 'You have a new receipt!',
                 'note' => $request->note,
