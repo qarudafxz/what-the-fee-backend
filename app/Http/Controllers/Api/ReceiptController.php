@@ -163,6 +163,32 @@ class ReceiptController extends Controller
         ]);
     }
 
+    public function undoArchivingOfReceipt()
+    {
+        //Get the last receipt that was archived
+        $archive = Archive::orderBy('created_at', 'desc')->first();
+
+        if (!$archive) {
+            return response()->json(
+                [
+                    'message' => 'No archived receipts',
+                ],
+                404
+            );
+        }
+
+        $receipt = new Receipt();
+        $receipt->receipt_id = $archive->receipt_id;
+        $receipt->ar_no = $archive->ar_no;
+
+        $receipt->save();
+        $archive->delete();
+
+        return response()->json([
+            'message' => 'Receipt restored',
+        ]);
+    }
+
     //This is the last function that is needed to fix
     //Will work on this tomorrow
     public function sendReceiptViaPusher(string $ar_no, Request $request)

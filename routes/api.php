@@ -38,23 +38,20 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 //Student platform APIs
-Route::middleware('auth:sanctum')->group(function () {
+//add back the middleware later
+// Route::middleware('auth::sanctum')->group();
+Route::controller(PaymentController::class)->group(function () {
     //getting the remaining balance of the student
-    Route::get('/balance/{id}', [
-        PaymentController::class,
-        'getStudentBalance',
-    ]);
+    Route::get('/balance/{id}', 'getStudentBalance');
     //getting the payment logs of the student
-    Route::get('/logs/{id}', [PaymentController::class, 'getStudentLogs']);
+    Route::get('/logs/{id}', 'getStudentLogs');
     //getting the total amount being paid by the student
-    Route::get('/student-payment/{id}', [
-        PaymentController::class,
-        'getTotalPaymentOfStudent',
-    ]);
+    Route::get('/student-payment/{id}', 'getTotalPaymentOfStudent');
     //getting the total amount being collected by the college
-    Route::get('/college/{id}', [PaymentController::class, 'getTotalPayment']);
+    Route::get('/college/{id}', 'getTotalPayment');
 });
 
+//admin platform APIs
 Route::controller(PaymentController::class)
     ->middleware('admin')
     ->group(function () {
@@ -134,6 +131,7 @@ Route::controller(ReceiptController::class)
         Route::get('/archives', 'getArchivedReceipts');
         Route::post('/restore-receipt/{ar_no}', 'restoreReceiptFromArchives');
         Route::post('/send-receipt/{ar_no}', 'sendReceiptViaPusher');
+        Route::post('/undo-receipt', 'undoArchivingOfReceipt');
     });
 
 //permission apis ===================================================================
