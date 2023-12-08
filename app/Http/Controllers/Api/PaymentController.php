@@ -349,6 +349,12 @@ class PaymentController extends Controller
             ->get();
 
         $monthly_data = [];
+
+        // Convert month number to month name
+
+        //Carbon makes it easy to convert month number to month name
+        //!m is the format for month number
+        //'F' is the format for month name
         foreach ($total_payment as $payment) {
             $monthName = Carbon::createFromFormat(
                 '!m',

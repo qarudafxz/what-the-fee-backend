@@ -283,7 +283,11 @@ class ReceiptController extends Controller
                 'receipt' => $receipt,
                 'message' => 'You have a new receipt!',
                 'note' => $request->note,
+                'created_at' => now(),
             ];
+
+            //add the notification on the database
+            //so it would be visible on the student's notification page
 
             $notification = new Notification();
             $notification->student_id = $student->student_id;
