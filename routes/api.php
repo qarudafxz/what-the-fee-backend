@@ -92,7 +92,7 @@ Route::controller(PaymentController::class)
 //admin apis ===================================================================
 
 Route::controller(AdminController::class)
-    ->middleware('admin')
+    // ->middleware('admin')
     ->group(function () {
         //get all the admins under a specific college
         Route::get('/get-admin/{college_id}', 'getAllAdminSpecificCollege');

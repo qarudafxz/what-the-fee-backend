@@ -79,8 +79,19 @@ class PaymentController extends Controller
         ]);
     }
 
+    //Total College Fee Collection function - Alx
     public function getTotalPayment(int $college_id)
     {
+        //provide step by step comment on this function
+
+        //get the total payment of the college
+
+        //join the payments table with students table
+        //join the students table with programs table
+        //join the programs table with colleges table
+        //get the total payment of the college
+        //where the college_id is equal to the college_id provided
+        //sum the amount of the payments
         $all_payment = Payment::join(
             'students',
             'students.student_id',
@@ -173,18 +184,28 @@ class PaymentController extends Controller
         ]);
     }
 
+    //Get the remaining balance of the student - Alx
     public function getStudentBalance(string $student_id)
     {
+        //provide step by step comment on this function
+
+        //get the student
+        //where the student_id is equal to the student_id provided
+        //select the student_id, first_name, last_name, and balance
+
         $student = Student::where('student_id', $student_id)
             ->select('student_id', 'first_name', 'last_name', 'balance')
             ->get();
 
+        //if the student is not found
+        //return a json response with a message of 'Student not found'
         if (!$student) {
             return response()->json([
                 'message' => 'Student not found',
             ]);
         }
 
+        //return a json response with a message of 'Successfully retrieved student'
         return response()->json([
             'message' => 'Successfully retrieved student ',
             $student,
@@ -296,24 +317,38 @@ class PaymentController extends Controller
         ]);
     }
 
+    //Get the student logs - Ch
     public function getStudentLogs(string $student_id)
     {
+        //provide step by step comment on this function
+
+        //get the student logs
+        //where the student_id is equal to the student_id provided
+        //select the student_id, first_name, last_name, and balance
         $studentPayment = Payment::where('student_id', $student_id)
             ->with(['collector'])
             ->get();
 
+        //return a json response with a message of 'Payment retrieved'
         return response()->json([
             'message' => 'Payment retrieved',
             'payments' => $studentPayment,
         ]);
     }
 
+    //Get the total payment of the student - Ch
     public function getTotalPaymentOfStudent(string $student_id)
     {
+        //provide step by step comment on this function
+
+        //get the total payment of the student
+        //where the student_id is equal to the student_id provided
+        //sum the amount of the payments
         $total_payment = Payment::where('student_id', $student_id)->sum(
             'amount'
         );
 
+        //return a json response with a message of 'Total payment retrieve of student'
         return response()->json([
             'message' => 'Total payment retrieve of student',
             'total_payment' => $total_payment,

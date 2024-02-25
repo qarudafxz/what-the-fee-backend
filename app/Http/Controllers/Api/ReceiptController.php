@@ -208,6 +208,7 @@ class ReceiptController extends Controller
             'note' => 'required|string',
         ]);
 
+        //get the full details of the receipt
         $receipt = Receipt::join(
             'payments',
             'payments.ar_no',
@@ -250,6 +251,7 @@ class ReceiptController extends Controller
             );
         }
 
+        //get the student's info
         $student = Student::where('student_id', $request->student_id)->first();
 
         if (!$student) {
@@ -261,12 +263,14 @@ class ReceiptController extends Controller
             );
         }
 
+        //connect to pusher
         try {
             $pusher = new Pusher(
                 config('broadcasting.connections.pusher.key'),
                 config('broadcasting.connections.pusher.secret'),
                 config('broadcasting.connections.pusher.app_id'),
                 [
+                    //provide the cluster here to specify where the pusher is located
                     'cluster' => config(
                         'broadcasting.connections.pusher.options.cluster'
                     ),
@@ -274,6 +278,7 @@ class ReceiptController extends Controller
                 ]
             );
 
+            //set the channel and event
             $channel = 'private-student-' . $student->student_id;
             $event = 'client-receipt-received';
             $unique_id = uniqid();
